@@ -60,7 +60,7 @@ input[type="text"]:focus {
 .hint {
     font-size: 0.9rem;
     color: #666;
-    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .template-container {
