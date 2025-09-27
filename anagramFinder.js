@@ -40,8 +40,8 @@ function matchesTemplate(word, template) {
 
 function canMakeWordWithTemplate(availableLetters, word, template) {
     const templateLetters = template.filter(letter => letter !== '');
-    const available = availableLetters.split('').concat(templateLetters);
-    const needed = word.split('');
+    const available = [...availableLetters, ...templateLetters];
+    const needed = [...word];
 
     for (let letter of needed) {
         const index = available.indexOf(letter);
