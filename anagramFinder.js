@@ -42,28 +42,43 @@ function canMakeWordWithTemplate(availableLetters, word, template) {
     const templateLetters = template.filter(letter => letter !== '');
     const available = [...availableLetters, ...templateLetters];
     const needed = [...word];
+    const wildcardTypes = [];
 
     for (let letter of needed) {
         const index = available.indexOf(letter);
-        const wildcardIndex = available.indexOf('?');
+        const questionIndex = available.indexOf('?');
+        const starIndex = available.indexOf('*');
 
         if (index !== -1) {
             available.splice(index, 1);
-        } else if (wildcardIndex !== -1) {
-            available.splice(wildcardIndex, 1);
+            wildcardTypes.push(null);
+        } else if (questionIndex !== -1) {
+            available.splice(questionIndex, 1);
+            wildcardTypes.push('?');
+        } else if (starIndex !== -1) {
+            available.splice(starIndex, 1);
+            wildcardTypes.push('*');
         } else {
-            return false;
+            return { canMake: false };
         }
     }
 
-    return true;
+    return { canMake: true, wildcardTypes };
 }
 
 function findAnagrams(wordlist, template, letters) {
-    return wordlist.filter(word =>
-        matchesTemplate(word, template) &&
-        canMakeWordWithTemplate(letters, word, template)
-    );
+    return wordlist
+        .map(word => {
+            if (!matchesTemplate(word, template)) {
+                return null;
+            }
+            const result = canMakeWordWithTemplate(letters, word, template);
+            if (!result.canMake) {
+                return null;
+            }
+            return { word, wildcardTypes: result.wildcardTypes };
+        })
+        .filter(result => result !== null);
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -149,6 +149,19 @@ input[type="text"]:focus {
     color: white;
 }
 
+.wildcard-question {
+    color: #555;
+}
+
+.wildcard-star {
+    color: #c41e3a;
+}
+
+.word:hover .wildcard-question,
+.word:hover .wildcard-star {
+    color: white;
+}
+
 .no-results {
     text-align: center;
     color: #999;

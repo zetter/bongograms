@@ -7,10 +7,27 @@ const letterScores = {
     u: 15, v: 70, w: 65, x: 80, y: 35, z: 80
 };
 
-function calculateScore(word, isCommon) {
-    const baseScore = [...word].reduce((sum, letter) => sum + (letterScores[letter] || 0), 0);
+function calculateScore(word, wildcardTypes, isCommon) {
+    const baseScore = [...word].reduce((sum, letter, index) => {
+        if (wildcardTypes[index] === '*') {
+            return sum;
+        }
+        return sum + (letterScores[letter] || 0);
+    }, 0);
     const finalScore = isCommon ? baseScore * 1.3 : baseScore;
     return Math.round(finalScore);
+}
+
+function formatWord(word, wildcardTypes) {
+    return [...word].map((letter, index) => {
+        const wildcardType = wildcardTypes[index];
+        if (wildcardType === '?') {
+            return `<span class="wildcard-question">${letter}</span>`;
+        } else if (wildcardType === '*') {
+            return `<span class="wildcard-star">${letter}</span>`;
+        }
+        return letter;
+    }).join('');
 }
 
 const input = document.getElementById('letters');
@@ -80,12 +97,22 @@ function updateResults() {
     const commonMatches = findAnagrams(commonWords, template, letters);
     const allMatches = findAnagrams(allWords, template, letters);
 
-    const commonSet = new Set(commonMatches);
-    const uniqueAllMatches = allMatches.filter(word => !commonSet.has(word));
+    const commonSet = new Set(commonMatches.map(m => m.word));
+    const uniqueAllMatches = allMatches.filter(m => !commonSet.has(m.word));
 
     const matches = [
-        ...commonMatches.map(word => ({ word, isCommon: true, score: calculateScore(word, true) })),
-        ...uniqueAllMatches.map(word => ({ word, isCommon: false, score: calculateScore(word, false) }))
+        ...commonMatches.map(m => ({
+            word: m.word,
+            wildcardTypes: m.wildcardTypes,
+            isCommon: true,
+            score: calculateScore(m.word, m.wildcardTypes, true)
+        })),
+        ...uniqueAllMatches.map(m => ({
+            word: m.word,
+            wildcardTypes: m.wildcardTypes,
+            isCommon: false,
+            score: calculateScore(m.word, m.wildcardTypes, false)
+        }))
     ];
 
     matches.sort((a, b) => b.score - a.score);
@@ -93,9 +120,9 @@ function updateResults() {
     if (matches.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
     } else {
-        wordsContainer.innerHTML = matches.map(({ word, isCommon, score }) =>
+        wordsContainer.innerHTML = matches.map(({ word, wildcardTypes, isCommon, score }) =>
             `<div class="word${isCommon ? ' common' : ''}" data-score="${score}">
-                <div class="word-text">${word}</div>
+                <div class="word-text">${formatWord(word, wildcardTypes)}</div>
                 <div class="word-score">Score: ${score}</div>
             </div>`
         ).join('');
