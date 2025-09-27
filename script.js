@@ -18,22 +18,28 @@ function calculateScoreAtPosition(word, wildcardTypes, position, multipliers, is
         return sum + (letterScore * multiplier);
     }, 0);
     const finalScore = isCommon ? baseScore * 1.3 : baseScore;
-    return Math.ceil(finalScore);
+    const roundedFinal = Math.ceil(finalScore);
+    const bonusScore = isCommon ? roundedFinal - baseScore : 0;
+    return { score: roundedFinal, baseScore, bonusScore };
 }
 
 function findBestPosition(word, wildcardTypes, positions, multipliers, isCommon) {
     let bestScore = 0;
     let bestPosition = positions[0];
+    let bestBaseScore = 0;
+    let bestBonusScore = 0;
 
     for (const position of positions) {
-        const score = calculateScoreAtPosition(word, wildcardTypes, position, multipliers, isCommon);
-        if (score > bestScore) {
-            bestScore = score;
+        const result = calculateScoreAtPosition(word, wildcardTypes, position, multipliers, isCommon);
+        if (result.score > bestScore) {
+            bestScore = result.score;
+            bestBaseScore = result.baseScore;
+            bestBonusScore = result.bonusScore;
             bestPosition = position;
         }
     }
 
-    return { position: bestPosition, score: bestScore };
+    return { position: bestPosition, score: bestScore, baseScore: bestBaseScore, bonusScore: bestBonusScore };
 }
 
 function formatWord(word, wildcardTypes) {
@@ -133,23 +139,27 @@ function updateResults() {
 
     const matches = [
         ...commonMatches.map(m => {
-            const { position, score } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, true);
+            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, true);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,
                 position,
                 isCommon: true,
-                score
+                score,
+                baseScore,
+                bonusScore
             };
         }),
         ...uniqueAllMatches.map(m => {
-            const { position, score } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, false);
+            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, false);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,
                 position,
                 isCommon: false,
-                score
+                score,
+                baseScore,
+                bonusScore
             };
         })
     ];
@@ -159,12 +169,15 @@ function updateResults() {
     if (matches.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
     } else {
-        wordsContainer.innerHTML = matches.map(({ word, wildcardTypes, isCommon, score }) =>
-            `<div class="word${isCommon ? ' common' : ''}" data-score="${score}">
+        wordsContainer.innerHTML = matches.map(({ word, wildcardTypes, isCommon, score, baseScore, bonusScore }) => {
+            const scoreDisplay = isCommon
+                ? `${baseScore} + <span class="bonus-score">${bonusScore}</span>`
+                : `${score}`;
+            return `<div class="word${isCommon ? ' common' : ''}" data-score="${score}">
                 <div class="word-text">${formatWord(word, wildcardTypes)}</div>
-                <div class="word-score">Score: ${score}</div>
-            </div>`
-        ).join('');
+                <div class="word-score">${scoreDisplay}</div>
+            </div>`;
+        }).join('');
     }
 }
 

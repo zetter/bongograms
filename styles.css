@@ -148,7 +148,7 @@ input[type="text"]:focus {
 }
 
 .word.common {
-    border-color: #ffd700;
+    border-color: #ff9800;
 }
 
 .word:hover {
@@ -178,6 +178,14 @@ input[type="text"]:focus {
 
 .word:hover .word-score {
     color: white;
+}
+
+.bonus-score {
+    color: #ff9800;
+}
+
+.word:hover .bonus-score {
+    color: #ffd54f;
 }
 
 .wildcard-question {
