@@ -92,6 +92,10 @@ input[type="text"]:focus {
     transition: all 0.2s;
 }
 
+.word.common {
+    border-color: #ffd700;
+}
+
 .word:hover {
     background: #667eea;
     color: white;
