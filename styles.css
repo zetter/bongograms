@@ -10,8 +10,9 @@ body {
     min-height: 100vh;
     padding: 20px;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .container {
@@ -222,6 +223,40 @@ input[type="text"]:focus {
     color: #999;
     font-size: 1.1rem;
     padding: 20px;
+}
+
+.footer-text {
+    max-width: 600px;
+    width: 100%;
+    margin-top: 50px;
+    padding: 0 20px 40px 20px;
+    text-align: center;
+}
+
+.footer-text p {
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.footer-text a {
+    color: #ffd54f;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 213, 79, 0.3);
+    transition: all 0.2s;
+}
+
+.footer-text a:hover {
+    color: #ffeb3b;
+    border-bottom-color: #ffeb3b;
+}
+
+.highlight-orange {
+    color: #ff9800;
+    font-weight: 600;
 }
 
 @media (max-width: 480px) {
