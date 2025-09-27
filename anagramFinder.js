@@ -1,3 +1,13 @@
+function matchesAtPosition(word, template, startPos, firstNonEmpty, lastNonEmpty) {
+    for (let i = firstNonEmpty; i <= lastNonEmpty; i++) {
+        const wordPos = startPos + (i - firstNonEmpty);
+        if (template[i] !== '' && word[wordPos] !== template[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function matchesTemplate(word, template) {
     const hasTemplate = template.some(letter => letter !== '');
     if (!hasTemplate) return true;
@@ -20,15 +30,9 @@ function matchesTemplate(word, template) {
     const maxStartPos = Math.min(firstNonEmpty, word.length - patternLength);
 
     for (let startPos = minStartPos; startPos <= maxStartPos; startPos++) {
-        let matches = true;
-        for (let i = firstNonEmpty; i <= lastNonEmpty; i++) {
-            const wordPos = startPos + (i - firstNonEmpty);
-            if (template[i] !== '' && word[wordPos] !== template[i]) {
-                matches = false;
-                break;
-            }
+        if (matchesAtPosition(word, template, startPos, firstNonEmpty, lastNonEmpty)) {
+            return true;
         }
-        if (matches) return true;
     }
 
     return false;
