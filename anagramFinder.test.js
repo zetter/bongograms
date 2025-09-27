@@ -101,3 +101,33 @@ test('empty template returns all matching anagrams', () => {
 
     assert.deepStrictEqual(result.sort(), ['act', 'cat', 'tac']);
 });
+
+test('templates work with wildcards', () => {
+    const wordlist = ['cat', 'dog'];
+    const template = ['c', '', '', '', ''];
+    const letters = '???';
+
+    const result = findAnagrams(wordlist, template, letters);
+
+    assert.deepStrictEqual(result.sort(), ['cat']);
+});
+
+test('cannot have letters before the start of the template', () => {
+    const wordlist = ['cat', 'act', 'tac'];
+    const template = ['c', '', '', '', ''];
+    const letters = '???';
+
+    const result = findAnagrams(wordlist, template, letters);
+
+    assert.deepStrictEqual(result.sort(), ['cat']);
+});
+
+test('cannot have letters after the end of the template', () => {
+    const wordlist = ['cat', 'ate', 'tac'];
+    const template = ['', '', '', '', 't'];
+    const letters = '???';
+
+    const result = findAnagrams(wordlist, template, letters);
+
+    assert.deepStrictEqual(result.sort(), ['cat']);
+});

@@ -4,6 +4,23 @@ function matchesTemplate(word, template) {
     if (word.length < 3 || word.length > 5) return false;
 
     if (word.length < 5) {
+        for (let i = 0; i < template.length; i++) {
+            if (template[i] !== '') {
+                if (i === 0) {
+                    if (word[0] !== template[0]) {
+                        return false;
+                    }
+                } else if (i === 4) {
+                    if (word[word.length - 1] !== template[4]) {
+                        return false;
+                    }
+                } else {
+                    if (!word.includes(template[i])) {
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
