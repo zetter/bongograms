@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { findAnagrams } = require('./anagramFinder.js');
+const { findAnagrams } = require('../public/anagramFinder.js');
 
 test('finds basic anagrams without template', () => {
     const wordlist = ['cat', 'act', 'dog', 'god'];

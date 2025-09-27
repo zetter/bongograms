@@ -1,1 +1,1 @@
-npx netlify-cli deploy -p 
+npx netlify-cli deploy -p -d public

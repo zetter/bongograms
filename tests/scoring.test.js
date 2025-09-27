@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { letterScores, calculateScoreAtPosition, findBestPosition } = require('./scoring.js');
+const { letterScores, calculateScoreAtPosition, findBestPosition } = require('../public/scoring.js');
 
 test('letterScores contains all letters', () => {
     const letters = 'abcdefghijklmnopqrstuvwxyz';
