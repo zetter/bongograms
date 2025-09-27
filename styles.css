@@ -113,6 +113,7 @@ input[type="text"]:focus {
     color: #333;
     border: 2px solid transparent;
     transition: all 0.2s;
+    cursor: pointer;
 }
 
 .word.common {
@@ -124,6 +125,28 @@ input[type="text"]:focus {
     color: white;
     border-color: #764ba2;
     transform: translateY(-2px);
+}
+
+.word-text {
+    margin-bottom: 4px;
+}
+
+.word-score {
+    font-size: 0.9rem;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s, max-height 0.3s;
+    color: #666;
+}
+
+.word.show-score .word-score {
+    opacity: 1;
+    max-height: 30px;
+}
+
+.word:hover .word-score {
+    color: white;
 }
 
 .no-results {
