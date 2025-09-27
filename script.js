@@ -33,7 +33,7 @@ async function loadDictionary() {
     }
 }
 
-input.addEventListener('input', findAnagrams);
+input.addEventListener('input', updateResults);
 
 templateBoxes.forEach((box, index) => {
     box.addEventListener('input', (e) => {
@@ -41,7 +41,7 @@ templateBoxes.forEach((box, index) => {
         if (e.target.value && index < templateBoxes.length - 1) {
             templateBoxes[index + 1].focus();
         }
-        findAnagrams();
+        updateResults();
     });
     box.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace' && !e.target.value && index > 0) {
@@ -50,7 +50,7 @@ templateBoxes.forEach((box, index) => {
     });
 });
 
-function findAnagrams() {
+function updateResults() {
     const letters = input.value.toLowerCase().trim();
     const template = Array.from(templateBoxes).map(box => box.value.toLowerCase());
     const hasTemplate = template.some(letter => letter !== '');
@@ -65,8 +65,8 @@ function findAnagrams() {
         return;
     }
 
-    const commonMatches = commonWords.filter(word => matchesTemplate(word, template) && canMakeWordWithTemplate(letters, word, template));
-    const allMatches = allWords.filter(word => matchesTemplate(word, template) && canMakeWordWithTemplate(letters, word, template));
+    const commonMatches = findAnagrams(commonWords, template, letters);
+    const allMatches = findAnagrams(allWords, template, letters);
 
     const commonSet = new Set(commonMatches);
     const uniqueAllMatches = allMatches.filter(word => !commonSet.has(word));
@@ -86,42 +86,3 @@ function findAnagrams() {
 }
 
 loadDictionary();
-
-function matchesTemplate(word, template) {
-    const hasTemplate = template.some(letter => letter !== '');
-    if (!hasTemplate) return true;
-    if (word.length < 3 || word.length > 5) return false;
-
-    if (word.length < 5) {
-        return true;
-    }
-
-    for (let i = 0; i < word.length; i++) {
-        if (template[i] !== '' && word[i] !== template[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function canMakeWordWithTemplate(availableLetters, word, template) {
-    const templateLetters = template.filter(letter => letter !== '');
-    const available = availableLetters.split('').concat(templateLetters);
-    const needed = word.split('');
-
-    for (let letter of needed) {
-        const index = available.indexOf(letter);
-        const wildcardIndex = available.indexOf('?');
-
-        if (index !== -1) {
-            available.splice(index, 1);
-        } else if (wildcardIndex !== -1) {
-            available.splice(wildcardIndex, 1);
-        } else {
-            return false;
-        }
-    }
-
-    return true;
-}
