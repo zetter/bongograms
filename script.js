@@ -131,7 +131,10 @@ function updateResults() {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
         toggleScoresLink.style.display = 'none';
     } else {
-        wordsContainer.innerHTML = matches.map(({ word, wildcardTypes, isCommon, score, baseScore, bonusScore }) => {
+        const totalMatches = matches.length;
+        const displayMatches = matches.slice(0, 200);
+
+        let html = displayMatches.map(({ word, wildcardTypes, isCommon, score, baseScore, bonusScore }) => {
             const scoreDisplay = isCommon
                 ? `${baseScore} + <span class="bonus-score">${bonusScore}</span>`
                 : `${score}`;
@@ -140,6 +143,12 @@ function updateResults() {
                 <div class="word-score">${scoreDisplay}</div>
             </div>`;
         }).join('');
+
+        if (totalMatches > 200) {
+            html += '<div class="no-results">More words found, just showing the top 200</div>';
+        }
+
+        wordsContainer.innerHTML = html;
         toggleScoresLink.style.display = 'inline';
     }
 }
