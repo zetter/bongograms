@@ -90,13 +90,18 @@ loadDictionary();
 function matchesTemplate(word, template) {
     const hasTemplate = template.some(letter => letter !== '');
     if (!hasTemplate) return true;
-    if (word.length !== 5) return false;
+    if (word.length < 3 || word.length > 5) return false;
 
-    for (let i = 0; i < 5; i++) {
+    if (word.length < 5) {
+        return true;
+    }
+
+    for (let i = 0; i < word.length; i++) {
         if (template[i] !== '' && word[i] !== template[i]) {
             return false;
         }
     }
+
     return true;
 }
 
