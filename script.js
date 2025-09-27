@@ -17,8 +17,10 @@ const input = document.getElementById('letters');
 const wordsContainer = document.getElementById('words-container');
 const templateBoxes = document.querySelectorAll('.template-box');
 const multiplierButtons = document.querySelectorAll('.multiplier-btn');
+const toggleScoresLink = document.getElementById('toggle-scores');
 
 const multipliers = [1, 1, 1, 1, 1];
+let scoresVisible = false;
 
 multiplierButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -127,24 +129,30 @@ function updateResults() {
 
     if (matches.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
+        toggleScoresLink.style.display = 'none';
     } else {
         wordsContainer.innerHTML = matches.map(({ word, wildcardTypes, isCommon, score, baseScore, bonusScore }) => {
             const scoreDisplay = isCommon
                 ? `${baseScore} + <span class="bonus-score">${bonusScore}</span>`
                 : `${score}`;
-            return `<div class="word${isCommon ? ' common' : ''}" data-score="${score}">
+            return `<div class="word${isCommon ? ' common' : ''}${scoresVisible ? ' show-score' : ''}" data-score="${score}">
                 <div class="word-text">${formatWord(word, wildcardTypes)}</div>
                 <div class="word-score">${scoreDisplay}</div>
             </div>`;
         }).join('');
+        toggleScoresLink.style.display = 'inline';
     }
 }
 
-wordsContainer.addEventListener('click', (e) => {
-    const wordElement = e.target.closest('.word');
-    if (wordElement) {
-        wordElement.classList.toggle('show-score');
-    }
+toggleScoresLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    scoresVisible = !scoresVisible;
+    toggleScoresLink.textContent = scoresVisible ? 'Hide scores' : 'Show estimated scores';
+
+    const words = wordsContainer.querySelectorAll('.word');
+    words.forEach(word => {
+        word.classList.toggle('show-score', scoresVisible);
+    });
 });
 
 loadDictionary();

@@ -122,10 +122,26 @@ input[type="text"]:focus {
 }
 
 .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 1.2rem;
     color: #333;
     margin-bottom: 15px;
     font-weight: 600;
+}
+
+.toggle-scores {
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: #667eea;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.toggle-scores:hover {
+    color: #764ba2;
+    text-decoration: underline;
 }
 
 .words-grid {
@@ -144,7 +160,6 @@ input[type="text"]:focus {
     color: #333;
     border: 2px solid transparent;
     transition: all 0.2s;
-    cursor: pointer;
 }
 
 .word.common {
