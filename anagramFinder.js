@@ -8,18 +8,31 @@ function matchesAtPosition(word, template, startPos, firstNonEmpty, lastNonEmpty
     return true;
 }
 
-function matchesTemplate(word, template) {
+function getValidPositions(word, template) {
     const hasTemplate = template.some(letter => letter !== '');
-    if (!hasTemplate) return true;
-    if (word.length < 3 || word.length > 5) return false;
+    const positions = [];
+
+    if (word.length < 3 || word.length > 5) return positions;
 
     if (word.length === 5) {
+        let matches = true;
         for (let i = 0; i < word.length; i++) {
             if (template[i] !== '' && word[i] !== template[i]) {
-                return false;
+                matches = false;
+                break;
             }
         }
-        return true;
+        if (matches) {
+            positions.push(0);
+        }
+        return positions;
+    }
+
+    if (!hasTemplate) {
+        for (let startPos = 0; startPos <= 5 - word.length; startPos++) {
+            positions.push(startPos);
+        }
+        return positions;
     }
 
     const firstNonEmpty = template.findIndex(letter => letter !== '');
@@ -31,11 +44,15 @@ function matchesTemplate(word, template) {
 
     for (let startPos = minStartPos; startPos <= maxStartPos; startPos++) {
         if (matchesAtPosition(word, template, startPos, firstNonEmpty, lastNonEmpty)) {
-            return true;
+            positions.push(startPos);
         }
     }
 
-    return false;
+    return positions;
+}
+
+function matchesTemplate(word, template) {
+    return getValidPositions(word, template).length > 0;
 }
 
 function canMakeWordWithTemplate(availableLetters, word, template) {
@@ -69,14 +86,15 @@ function canMakeWordWithTemplate(availableLetters, word, template) {
 function findAnagrams(wordlist, template, letters) {
     return wordlist
         .map(word => {
-            if (!matchesTemplate(word, template)) {
+            const positions = getValidPositions(word, template);
+            if (positions.length === 0) {
                 return null;
             }
             const result = canMakeWordWithTemplate(letters, word, template);
             if (!result.canMake) {
                 return null;
             }
-            return { word, wildcardTypes: result.wildcardTypes };
+            return { word, wildcardTypes: result.wildcardTypes, positions };
         })
         .filter(result => result !== null);
 }

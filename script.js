@@ -7,15 +7,33 @@ const letterScores = {
     u: 15, v: 70, w: 65, x: 80, y: 35, z: 80
 };
 
-function calculateScore(word, wildcardTypes, isCommon) {
+function calculateScoreAtPosition(word, wildcardTypes, position, multipliers, isCommon) {
     const baseScore = [...word].reduce((sum, letter, index) => {
         if (wildcardTypes[index] === '*') {
             return sum;
         }
-        return sum + (letterScores[letter] || 0);
+        const letterScore = letterScores[letter] || 0;
+        const gridPosition = position + index;
+        const multiplier = multipliers[gridPosition] || 1;
+        return sum + (letterScore * multiplier);
     }, 0);
     const finalScore = isCommon ? baseScore * 1.3 : baseScore;
-    return Math.round(finalScore);
+    return Math.ceil(finalScore);
+}
+
+function findBestPosition(word, wildcardTypes, positions, multipliers, isCommon) {
+    let bestScore = 0;
+    let bestPosition = positions[0];
+
+    for (const position of positions) {
+        const score = calculateScoreAtPosition(word, wildcardTypes, position, multipliers, isCommon);
+        if (score > bestScore) {
+            bestScore = score;
+            bestPosition = position;
+        }
+    }
+
+    return { position: bestPosition, score: bestScore };
 }
 
 function formatWord(word, wildcardTypes) {
@@ -33,6 +51,19 @@ function formatWord(word, wildcardTypes) {
 const input = document.getElementById('letters');
 const wordsContainer = document.getElementById('words-container');
 const templateBoxes = document.querySelectorAll('.template-box');
+const multiplierButtons = document.querySelectorAll('.multiplier-btn');
+
+const multipliers = [1, 1, 1, 1, 1];
+
+multiplierButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const index = parseInt(btn.dataset.index);
+        multipliers[index] = multipliers[index] === 1 ? 2 : multipliers[index] === 2 ? 3 : 1;
+        btn.textContent = `${multipliers[index]}x`;
+        btn.classList.toggle('active', multipliers[index] > 1);
+        updateResults();
+    });
+});
 
 async function loadDictionary() {
     wordsContainer.innerHTML = '<div class="no-results">Loading word list...</div>';
@@ -101,18 +132,26 @@ function updateResults() {
     const uniqueAllMatches = allMatches.filter(m => !commonSet.has(m.word));
 
     const matches = [
-        ...commonMatches.map(m => ({
-            word: m.word,
-            wildcardTypes: m.wildcardTypes,
-            isCommon: true,
-            score: calculateScore(m.word, m.wildcardTypes, true)
-        })),
-        ...uniqueAllMatches.map(m => ({
-            word: m.word,
-            wildcardTypes: m.wildcardTypes,
-            isCommon: false,
-            score: calculateScore(m.word, m.wildcardTypes, false)
-        }))
+        ...commonMatches.map(m => {
+            const { position, score } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, true);
+            return {
+                word: m.word,
+                wildcardTypes: m.wildcardTypes,
+                position,
+                isCommon: true,
+                score
+            };
+        }),
+        ...uniqueAllMatches.map(m => {
+            const { position, score } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, false);
+            return {
+                word: m.word,
+                wildcardTypes: m.wildcardTypes,
+                position,
+                isCommon: false,
+                score
+            };
+        })
     ];
 
     matches.sort((a, b) => b.score - a.score);
