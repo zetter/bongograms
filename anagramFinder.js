@@ -12,14 +12,8 @@ function matchesTemplate(word, template) {
         return true;
     }
 
-    let firstNonEmpty = template.findIndex(letter => letter !== '');
-    let lastNonEmpty = -1;
-    for (let i = template.length - 1; i >= 0; i--) {
-        if (template[i] !== '') {
-            lastNonEmpty = i;
-            break;
-        }
-    }
+    const firstNonEmpty = template.findIndex(letter => letter !== '');
+    const lastNonEmpty = template.findLastIndex(letter => letter !== '');
 
     const patternLength = lastNonEmpty - firstNonEmpty + 1;
     const minStartPos = Math.max(0, word.length - (template.length - firstNonEmpty));
