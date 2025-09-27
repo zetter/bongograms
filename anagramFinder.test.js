@@ -32,7 +32,7 @@ test('finds 5-letter words matching template position', () => {
     assert.deepStrictEqual(result, ['count']);
 });
 
-test('finds 3-letter words when template has letters beyond word length', () => {
+test('finds 3-letter words with templates', () => {
     const wordlist = ['cat', 'act', 'dog'];
     const template = ['', 'c', '', '', ''];
     const letters = 'at';
@@ -42,14 +42,14 @@ test('finds 3-letter words when template has letters beyond word length', () => 
     assert.deepStrictEqual(result.sort(), ['act', 'cat']);
 });
 
-test('finds 4-letter words when template has letters beyond word length', () => {
-    const wordlist = ['dogs', 'gods', 'cats'];
+test('finds 4-letter with templates', () => {
+    const wordlist = ['dog', 'gods', 'cats'];
     const template = ['', '', 'd', '', ''];
     const letters = 'ogs';
 
     const result = findAnagrams(wordlist, template, letters);
 
-    assert.deepStrictEqual(result.sort(), ['dogs', 'gods']);
+    assert.deepStrictEqual(result.sort(), ['dog', 'gods']);
 });
 
 test('returns empty array when no matches', () => {
@@ -153,3 +153,12 @@ test('cannot have letters after the end of the template when using wildcards', (
     assert.deepStrictEqual(result.sort(), ['cat']);
 });
 
+test('should not insert letter between template characters', () => {
+    const wordlist = ['bob', 'boa', 'abb'];
+    const template = ['', 'b', 'b', '', ''];
+    const letters = 'ao';
+
+    const result = findAnagrams(wordlist, template, letters);
+
+    assert.deepStrictEqual(result.sort(), ['abb']);
+})

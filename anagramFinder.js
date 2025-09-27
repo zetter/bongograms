@@ -12,27 +12,32 @@ function matchesTemplate(word, template) {
         return true;
     }
 
-    for (let i = 0; i < template.length; i++) {
+    let firstNonEmpty = template.findIndex(letter => letter !== '');
+    let lastNonEmpty = -1;
+    for (let i = template.length - 1; i >= 0; i--) {
         if (template[i] !== '') {
-            let wordPos;
-            if (i <= 2) {
-                if (word[i] === template[i]) {
-                    continue;
-                } else if (word[0] === template[i]) {
-                    continue;
-                } else {
-                    return false;
-                }
-            } else {
-                wordPos = word.length - (5 - i);
-                if (wordPos < 0 || word[wordPos] !== template[i]) {
-                    return false;
-                }
-            }
+            lastNonEmpty = i;
+            break;
         }
     }
 
-    return true;
+    const patternLength = lastNonEmpty - firstNonEmpty + 1;
+    const minStartPos = Math.max(0, word.length - (template.length - firstNonEmpty));
+    const maxStartPos = Math.min(firstNonEmpty, word.length - patternLength);
+
+    for (let startPos = minStartPos; startPos <= maxStartPos; startPos++) {
+        let matches = true;
+        for (let i = firstNonEmpty; i <= lastNonEmpty; i++) {
+            const wordPos = startPos + (i - firstNonEmpty);
+            if (template[i] !== '' && word[wordPos] !== template[i]) {
+                matches = false;
+                break;
+            }
+        }
+        if (matches) return true;
+    }
+
+    return false;
 }
 
 function canMakeWordWithTemplate(availableLetters, word, template) {
