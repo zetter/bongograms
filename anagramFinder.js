@@ -3,30 +3,32 @@ function matchesTemplate(word, template) {
     if (!hasTemplate) return true;
     if (word.length < 3 || word.length > 5) return false;
 
-    if (word.length < 5) {
-        for (let i = 0; i < template.length; i++) {
-            if (template[i] !== '') {
-                if (i === 0) {
-                    if (word[0] !== template[0]) {
-                        return false;
-                    }
-                } else if (i === 4) {
-                    if (word[word.length - 1] !== template[4]) {
-                        return false;
-                    }
-                } else {
-                    if (!word.includes(template[i])) {
-                        return false;
-                    }
-                }
+    if (word.length === 5) {
+        for (let i = 0; i < word.length; i++) {
+            if (template[i] !== '' && word[i] !== template[i]) {
+                return false;
             }
         }
         return true;
     }
 
-    for (let i = 0; i < word.length; i++) {
-        if (template[i] !== '' && word[i] !== template[i]) {
-            return false;
+    for (let i = 0; i < template.length; i++) {
+        if (template[i] !== '') {
+            let wordPos;
+            if (i <= 2) {
+                if (word[i] === template[i]) {
+                    continue;
+                } else if (word[0] === template[i]) {
+                    continue;
+                } else {
+                    return false;
+                }
+            } else {
+                wordPos = word.length - (5 - i);
+                if (wordPos < 0 || word[wordPos] !== template[i]) {
+                    return false;
+                }
+            }
         }
     }
 
