@@ -75,6 +75,12 @@ templateBoxes.forEach((box, index) => {
             templateBoxes[index - 1].focus();
         }
     });
+    box.addEventListener('focus', (e) => {
+        e.target.select();
+    });
+    box.addEventListener('click', (e) => {
+        e.target.select();
+    });
 });
 
 function updateResults() {
