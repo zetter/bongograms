@@ -135,7 +135,6 @@ function updateResults() {
 
     if (matches.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
-        toggleScoresLink.style.display = 'none';
     } else {
         const totalMatches = matches.length;
         const displayMatches = matches.slice(0, 200);
@@ -155,7 +154,6 @@ function updateResults() {
         }
 
         wordsContainer.innerHTML = html;
-        toggleScoresLink.style.display = 'inline';
     }
 }
 
