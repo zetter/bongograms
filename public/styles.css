@@ -143,7 +143,6 @@ input[type="text"]:focus {
 }
 
 .toggle-scores {
-    font-size: 0.9rem;
     font-weight: normal;
     color: #667eea;
     text-decoration: none;
@@ -249,6 +248,7 @@ input[type="text"]:focus {
     line-height: 1.6;
     margin: 0;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    padding-bottom: 1rem;
 }
 
 .footer-text a {
@@ -261,7 +261,6 @@ input[type="text"]:focus {
 
 .footer-text a:hover {
     color: #ffeb3b;
-    border-bottom-color: #ffeb3b;
 }
 
 .highlight-orange {
