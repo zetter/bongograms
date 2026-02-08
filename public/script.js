@@ -13,6 +13,8 @@ function formatWord(word, wildcardTypes) {
     }).join('');
 }
 
+const ranking = (typeof resultRanking !== 'undefined') ? resultRanking : null;
+
 const input = document.getElementById('letters');
 const lettersChooser = document.getElementById('letters-chooser');
 const lettersModeButtons = document.querySelectorAll('.letters-mode .mode-btn');
@@ -187,6 +189,8 @@ function updateResults() {
         ? activeIndices.map(i => multipliers[i])
         : multipliers;
 
+    const hasBoostMultipliers = multipliersForScoring.some(m => m > 1);
+
     const hasTemplate = template.some(letter => letter !== '');
     const chosenLetters = input.value.toLowerCase().trim();
 
@@ -226,7 +230,7 @@ function updateResults() {
 
     const matches = [
         ...commonMatches.map(m => {
-            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliersForScoring, true);
+            const { position, score, baseScore, bonusScore, multiplierSpaceScore } = ranking.findBestPositionForOrdering(m.word, m.wildcardTypes, m.positions, multipliersForScoring, true);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,
@@ -234,11 +238,12 @@ function updateResults() {
                 isCommon: true,
                 score,
                 baseScore,
-                bonusScore
+                bonusScore,
+                multiplierSpaceScore
             };
         }),
         ...uniqueAllMatches.map(m => {
-            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliersForScoring, false);
+            const { position, score, baseScore, bonusScore, multiplierSpaceScore } = ranking.findBestPositionForOrdering(m.word, m.wildcardTypes, m.positions, multipliersForScoring, false);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,
@@ -246,12 +251,13 @@ function updateResults() {
                 isCommon: false,
                 score,
                 baseScore,
-                bonusScore
+                bonusScore,
+                multiplierSpaceScore
             };
         })
     ];
 
-    matches.sort((a, b) => b.score - a.score);
+    matches.sort((a, b) => ranking.compareMatches(a, b, hasBoostMultipliers));
 
     if (matches.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">No words found</div>';
