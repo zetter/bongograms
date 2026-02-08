@@ -60,13 +60,30 @@ function setLettersMode(nextMode) {
 multiplierButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
         const index = parseInt(btn.dataset.index);
-        multipliers[index] = multipliers[index] === 1
-            ? 2
-            : multipliers[index] === 2
-                ? 3
-                : multipliers[index] === 3
-                    ? 0
+        const canDisableSlot = index === 0 || index === multipliers.length - 1;
+
+        if (!canDisableSlot) {
+            // Middle slots: cycle 1x → 2x → 3x → 1x (no X)
+            multipliers[index] = multipliers[index] === 1
+                ? 2
+                : multipliers[index] === 2
+                    ? 3
                     : 1;
+        } else {
+            // Edge slots: cycle 1x → 2x → 3x → X → 1x
+            multipliers[index] = multipliers[index] === 1
+                ? 2
+                : multipliers[index] === 2
+                    ? 3
+                    : multipliers[index] === 3
+                        ? 0
+                        : 1;
+        }
+
+        // Safety: never allow X on middle slots.
+        if (!canDisableSlot && multipliers[index] === 0) {
+            multipliers[index] = 1;
+        }
 
         btn.textContent = multipliers[index] === 0 ? 'X' : `${multipliers[index]}x`;
         btn.classList.toggle('active', multipliers[index] > 1);
