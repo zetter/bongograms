@@ -55,7 +55,7 @@ h1 {
 }
 
 .input-group {
-    margin-bottom: 22px;
+    margin-bottom: 34px;
 }
 
 .letters-mode {
@@ -354,7 +354,7 @@ input[type="text"]:focus {
     }
 
     .input-group {
-        margin-bottom: 26px;
+        margin-bottom: 30px;
     }
 
     label {
