@@ -42,9 +42,19 @@
         </div>
 
         <div class="input-group">
-            <label for="letters">Letters</label>
-            <div class="hint">Use ? to represent any scoring letter and * to use a non-scoring wildcard</div>
-            <input type="text" id="letters" placeholder="e.g., cat or ca?" autocomplete="off" autocorrect="off">
+
+            <div class="letters-mode" role="tablist" aria-label="Letters mode">
+                <button type="button" class="mode-btn active" data-mode="any" role="tab" aria-selected="true">Any
+                    letters</button>
+                <button type="button" class="mode-btn" data-mode="choose" role="tab" aria-selected="false">Choose
+                    letters</button>
+            </div>
+
+            <div id="letters-chooser" class="letters-chooser hidden">
+                <div class="hint">Use ? to represent any scoring letter and * to use a non-scoring wildcard</div>
+                <input type="text" id="letters" placeholder="e.g., cat or ca?" autocomplete="off" autocorrect="off"
+                    inputmode="text">
+            </div>
 
         </div>
 
@@ -54,7 +64,7 @@
 
             </div>
             <div id="words-container" class="words-grid">
-                <div class="no-results">Enter letters above to find words</div>
+                <div class="no-results">Enter a template above to find words</div>
             </div>
         </div>
     </div>

@@ -14,6 +14,8 @@ function formatWord(word, wildcardTypes) {
 }
 
 const input = document.getElementById('letters');
+const lettersChooser = document.getElementById('letters-chooser');
+const lettersModeButtons = document.querySelectorAll('.letters-mode .mode-btn');
 const wordsContainer = document.getElementById('words-container');
 const templateBoxes = document.querySelectorAll('.template-box');
 const multiplierButtons = document.querySelectorAll('.multiplier-btn');
@@ -21,6 +23,37 @@ const toggleScoresLink = document.getElementById('toggle-scores');
 
 const multipliers = [1, 1, 1, 1, 1];
 let scoresVisible = false;
+let dictionaryLoaded = false;
+
+let lettersMode = 'any';
+let hasEverChosenLetters = false;
+
+function setLettersMode(nextMode) {
+    lettersMode = nextMode;
+
+    lettersModeButtons.forEach((btn) => {
+        const isActive = btn.dataset.mode === lettersMode;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    const showChooser = lettersMode === 'choose';
+    lettersChooser.classList.toggle('hidden', !showChooser);
+
+    if (showChooser) {
+        if (!hasEverChosenLetters) {
+            input.value = '';
+            hasEverChosenLetters = true;
+        }
+        input.disabled = !dictionaryLoaded;
+        input.focus();
+    } else {
+        input.disabled = true;
+        input.blur();
+    }
+
+    updateResults();
+}
 
 multiplierButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -52,8 +85,13 @@ async function loadDictionary() {
             .map(word => word.trim().toLowerCase())
             .filter(word => word.length >= 3 && word.length <= 5);
 
-        wordsContainer.innerHTML = '<div class="no-results">Enter letters above to find words</div>';
-        input.disabled = false;
+        dictionaryLoaded = true;
+        wordsContainer.innerHTML = '<div class="no-results">Enter a template above to find words</div>';
+
+        // Default mode is "any" (input hidden/disabled). Only enable the input when explicitly choosing letters.
+        if (lettersMode === 'choose') {
+            input.disabled = false;
+        }
     } catch (error) {
         wordsContainer.innerHTML = '<div class="no-results">Error loading word list</div>';
         console.error('Failed to load dictionary:', error);
@@ -61,6 +99,10 @@ async function loadDictionary() {
 }
 
 input.addEventListener('input', updateResults);
+
+lettersModeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => setLettersMode(btn.dataset.mode));
+});
 
 templateBoxes.forEach((box, index) => {
     box.addEventListener('input', (e) => {
@@ -84,19 +126,30 @@ templateBoxes.forEach((box, index) => {
 });
 
 function updateResults() {
-    const letters = input.value.toLowerCase().trim();
     const template = Array.from(templateBoxes).map(box => box.value.toLowerCase());
     const hasTemplate = template.some(letter => letter !== '');
+    const chosenLetters = input.value.toLowerCase().trim();
 
-    if (letters.length === 0 && !hasTemplate) {
-        wordsContainer.innerHTML = '<div class="no-results">Enter letters above to find words</div>';
-        return;
+    // No results when template is blank AND "Any letters" is selected.
+    // If "Choose letters" is selected, allow searching with letters only.
+    if (!hasTemplate) {
+        if (lettersMode === 'any') {
+            wordsContainer.innerHTML = '<div class="no-results">Enter a template above to find words</div>';
+            return;
+        }
+
+        if (chosenLetters.length === 0) {
+            wordsContainer.innerHTML = '<div class="no-results">Enter letters above to find words</div>';
+            return;
+        }
     }
 
     if (commonWords.length === 0 && allWords.length === 0) {
         wordsContainer.innerHTML = '<div class="no-results">Word list not loaded yet</div>';
         return;
     }
+
+    const letters = (lettersMode === 'any') ? '?????' : chosenLetters;
 
     const commonMatches = findAnagrams(commonWords, template, letters);
     const allMatches = findAnagrams(allWords, template, letters);
@@ -169,3 +222,6 @@ toggleScoresLink.addEventListener('click', (e) => {
 });
 
 loadDictionary();
+
+// Initialize UI state
+setLettersMode('any');

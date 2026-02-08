@@ -46,6 +46,40 @@ h1 {
     margin-bottom: 30px;
 }
 
+.letters-mode {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: #fff;
+}
+
+.mode-btn:focus {
+    outline: none;
+    border-color: #764ba2;
+}
+
+.letters-chooser.hidden {
+    display: none;
+}
+
 label {
     display: block;
     font-size: 1.2rem;
@@ -276,6 +310,17 @@ input[type="text"]:focus {
     .container {
         padding: 20px;
         margin-top: 20px;
+    }
+
+    .letters-mode {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .mode-btn {
+        padding: 9px 10px;
+        font-size: 0.9rem;
+        border-radius: 9px;
     }
 
     input[type="text"] {
