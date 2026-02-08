@@ -58,9 +58,44 @@ function setLettersMode(nextMode) {
 multiplierButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
         const index = parseInt(btn.dataset.index);
-        multipliers[index] = multipliers[index] === 1 ? 2 : multipliers[index] === 2 ? 3 : 1;
-        btn.textContent = `${multipliers[index]}x`;
+        multipliers[index] = multipliers[index] === 1
+            ? 2
+            : multipliers[index] === 2
+                ? 3
+                : multipliers[index] === 3
+                    ? 0
+                    : 1;
+
+        btn.textContent = multipliers[index] === 0 ? 'X' : `${multipliers[index]}x`;
         btn.classList.toggle('active', multipliers[index] > 1);
+        btn.classList.toggle('off', multipliers[index] === 0);
+
+        const column = btn.closest('.template-column');
+        const templateBox = column?.querySelector('.template-box');
+        if (templateBox) {
+            templateBox.disabled = multipliers[index] === 0;
+            column?.classList.toggle('off', multipliers[index] === 0);
+
+            // If you turned off the currently-focused box, move focus.
+            if (document.activeElement === templateBox && templateBox.disabled) {
+                let nextIndex = index + 1;
+                while (nextIndex < templateBoxes.length && templateBoxes[nextIndex].disabled) {
+                    nextIndex++;
+                }
+                if (nextIndex < templateBoxes.length) {
+                    templateBoxes[nextIndex].focus();
+                } else {
+                    let prevIndex = index - 1;
+                    while (prevIndex >= 0 && templateBoxes[prevIndex].disabled) {
+                        prevIndex--;
+                    }
+                    if (prevIndex >= 0) {
+                        templateBoxes[prevIndex].focus();
+                    }
+                }
+            }
+        }
+
         updateResults();
     });
 });
@@ -108,13 +143,25 @@ templateBoxes.forEach((box, index) => {
     box.addEventListener('input', (e) => {
         e.target.value = e.target.value.toLowerCase();
         if (e.target.value && index < templateBoxes.length - 1) {
-            templateBoxes[index + 1].focus();
+            let nextIndex = index + 1;
+            while (nextIndex < templateBoxes.length && templateBoxes[nextIndex].disabled) {
+                nextIndex++;
+            }
+            if (nextIndex < templateBoxes.length) {
+                templateBoxes[nextIndex].focus();
+            }
         }
         updateResults();
     });
     box.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace' && !e.target.value && index > 0) {
-            templateBoxes[index - 1].focus();
+            let prevIndex = index - 1;
+            while (prevIndex >= 0 && templateBoxes[prevIndex].disabled) {
+                prevIndex--;
+            }
+            if (prevIndex >= 0) {
+                templateBoxes[prevIndex].focus();
+            }
         }
     });
     box.addEventListener('focus', (e) => {
@@ -126,7 +173,20 @@ templateBoxes.forEach((box, index) => {
 });
 
 function updateResults() {
-    const template = Array.from(templateBoxes).map(box => box.value.toLowerCase());
+    const templateRaw = Array.from(templateBoxes).map(box => box.value.toLowerCase());
+    const activeIndices = multipliers
+        .map((m, i) => (m === 0 ? null : i))
+        .filter(i => i !== null);
+    const isLengthFiltered = activeIndices.length !== 5;
+
+    const template = isLengthFiltered
+        ? activeIndices.map(i => templateRaw[i])
+        : templateRaw;
+
+    const multipliersForScoring = isLengthFiltered
+        ? activeIndices.map(i => multipliers[i])
+        : multipliers;
+
     const hasTemplate = template.some(letter => letter !== '');
     const chosenLetters = input.value.toLowerCase().trim();
 
@@ -149,17 +209,24 @@ function updateResults() {
         return;
     }
 
-    const letters = (lettersMode === 'any') ? '?????' : chosenLetters;
+    const wildcardCount = isLengthFiltered ? activeIndices.length : 5;
+    const letters = (lettersMode === 'any') ? '?'.repeat(wildcardCount) : chosenLetters;
 
-    const commonMatches = findAnagrams(commonWords, template, letters);
-    const allMatches = findAnagrams(allWords, template, letters);
+    let commonMatches = findAnagrams(commonWords, template, letters);
+    let allMatches = findAnagrams(allWords, template, letters);
+
+    if (isLengthFiltered) {
+        const requiredLength = activeIndices.length;
+        commonMatches = commonMatches.filter(m => m.word.length === requiredLength);
+        allMatches = allMatches.filter(m => m.word.length === requiredLength);
+    }
 
     const commonSet = new Set(commonMatches.map(m => m.word));
     const uniqueAllMatches = allMatches.filter(m => !commonSet.has(m.word));
 
     const matches = [
         ...commonMatches.map(m => {
-            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, true);
+            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliersForScoring, true);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,
@@ -171,7 +238,7 @@ function updateResults() {
             };
         }),
         ...uniqueAllMatches.map(m => {
-            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliers, false);
+            const { position, score, baseScore, bonusScore } = findBestPosition(m.word, m.wildcardTypes, m.positions, multipliersForScoring, false);
             return {
                 word: m.word,
                 wildcardTypes: m.wildcardTypes,

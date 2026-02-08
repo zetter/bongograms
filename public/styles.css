@@ -178,6 +178,26 @@ input[type="text"]:focus {
     color: white;
 }
 
+.multiplier-btn.off {
+    border-color: #cfcfcf;
+    background: #ededed;
+    color: #777;
+}
+
+.template-column.off .template-box {
+    border-color: #cfcfcf;
+    background: repeating-linear-gradient(45deg,
+            #f4f4f4,
+            #f4f4f4 6px,
+            #ededed 6px,
+            #ededed 12px);
+    color: #999;
+}
+
+.template-column.off .template-box:focus {
+    border-color: #cfcfcf;
+}
+
 .results {
     margin-top: 8px;
 }

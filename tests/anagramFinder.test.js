@@ -162,3 +162,14 @@ test('should not insert letter between template characters', () => {
 
     assert.deepStrictEqual(result.sort(), ['abb']);
 })
+
+test('supports variable-length templates (e.g., 4 slots)', () => {
+    const wordlist = ['cats', 'cast', 'tacs', 'tacos'];
+    const template = ['', 'a', '', ''];
+    const letters = 'cst?';
+
+    const result = findAnagrams(wordlist, template, letters).map(r => r.word);
+
+    // 5-letter words should be rejected when the template is 4 slots long.
+    assert.deepStrictEqual(result.sort(), ['cast', 'cats', 'tacs']);
+});

@@ -11,10 +11,11 @@ function matchesAtPosition(word, template, startPos, firstNonEmpty, lastNonEmpty
 function getValidPositions(word, template) {
     const hasTemplate = template.some(letter => letter !== '');
     const positions = [];
+    const boardLength = template.length;
 
-    if (word.length < 3 || word.length > 5) return positions;
+    if (word.length < 3 || word.length > boardLength) return positions;
 
-    if (word.length === 5) {
+    if (word.length === boardLength) {
         let matches = true;
         for (let i = 0; i < word.length; i++) {
             if (template[i] !== '' && word[i] !== template[i]) {
@@ -29,7 +30,7 @@ function getValidPositions(word, template) {
     }
 
     if (!hasTemplate) {
-        for (let startPos = 0; startPos <= 5 - word.length; startPos++) {
+        for (let startPos = 0; startPos <= boardLength - word.length; startPos++) {
             positions.push(startPos);
         }
         return positions;
