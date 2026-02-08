@@ -46,14 +46,16 @@
             <div class="letters-mode" role="tablist" aria-label="Letters mode">
                 <button type="button" class="mode-btn active" data-mode="any" role="tab" aria-selected="true">Any
                     letters</button>
-                <button type="button" class="mode-btn" data-mode="choose" role="tab" aria-selected="false">Choose
+                <button type="button" class="mode-btn" data-mode="choose" role="tab" aria-selected="false"
+                    id="choose-letters-tab">Choose
                     letters</button>
             </div>
 
             <div id="letters-chooser" class="letters-chooser hidden">
                 <div class="hint">Use ? to represent any scoring letter and * to use a non-scoring wildcard</div>
+                <label for="letters" class="visually-hidden">Choose letters</label>
                 <input type="text" id="letters" placeholder="e.g., cat or ca?" autocomplete="off" autocorrect="off"
-                    inputmode="text">
+                    inputmode="text" aria-labelledby="choose-letters-tab">
             </div>
 
         </div>
